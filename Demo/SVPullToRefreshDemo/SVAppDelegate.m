@@ -16,7 +16,7 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    self.window.rootViewController = [[SVViewController alloc] initWithNibName:@"SVViewController" bundle:nil];
+    self.window.rootViewController = [[UINavigationController alloc] initWithRootViewController:[[SVViewController alloc] initWithNibName:@"SVViewController" bundle:nil]];
     [self.window makeKeyAndVisible];
     return YES;
 }

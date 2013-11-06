@@ -22,21 +22,28 @@
     [super viewDidLoad];
     [self setupDataSource];
     
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(refresh)];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
     __weak SVViewController *weakSelf = self;
     
     // setup pull-to-refresh
     [self.tableView addPullToRefreshWithActionHandler:^{
         [weakSelf insertRowAtTop];
     }];
-        
+    
     // setup infinite scrolling
     [self.tableView addInfiniteScrollingWithActionHandler:^{
         [weakSelf insertRowAtBottom];
     }];
+    [tableView triggerPullToRefresh];
 }
 
-- (void)viewDidAppear:(BOOL)animated {
-    [tableView triggerPullToRefresh];
+- (void)refresh
+{
+    [self.tableView scrollToTopTriggerRefresh];
+    [self insertRowAtTop];
 }
 
 #pragma mark - Actions
