@@ -102,6 +102,12 @@ static char UIScrollViewPullToRefreshView;
     [self.pullToRefreshView startAnimating];
 }
 
+- (void)scrollToTopTriggerRefresh
+{
+    [self setContentOffset:CGPointMake(self.contentOffset.x, -(self.pullToRefreshView.frame.size.height + self.pullToRefreshView.originalTopInset)) animated:YES];
+    [self.pullToRefreshView startAnimating];
+}
+
 - (void)setPullToRefreshView:(SVPullToRefreshView *)pullToRefreshView {
     [self willChangeValueForKey:@"SVPullToRefreshView"];
     objc_setAssociatedObject(self, &UIScrollViewPullToRefreshView,
