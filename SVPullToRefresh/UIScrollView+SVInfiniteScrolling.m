@@ -239,7 +239,7 @@ UIEdgeInsets scrollViewOriginalContentInsets;
     else
         [self.viewForState replaceObjectAtIndex:state withObject:viewPlaceholder];
     
-    self.state = self.state;
+    [self updateViewForState:self.state];
 }
 
 - (void)setActivityIndicatorViewStyle:(UIActivityIndicatorViewStyle)viewStyle {
@@ -269,12 +269,20 @@ UIEdgeInsets scrollViewOriginalContentInsets;
     SVInfiniteScrollingState previousState = _state;
     _state = newState;
     
+    [self updateViewForState:newState];
+    
+    if(previousState == SVInfiniteScrollingStateTriggered && newState == SVInfiniteScrollingStateLoading && self.infiniteScrollingHandler && self.enabled)
+        self.infiniteScrollingHandler();
+}
+
+- (void)updateViewForState:(SVInfiniteScrollingState)state
+{
     for(id otherView in self.viewForState) {
         if([otherView isKindOfClass:[UIView class]])
             [otherView removeFromSuperview];
     }
     
-    id customView = [self.viewForState objectAtIndex:newState];
+    id customView = [self.viewForState objectAtIndex:state];
     BOOL hasCustomView = [customView isKindOfClass:[UIView class]];
     
     if(hasCustomView) {
@@ -288,7 +296,7 @@ UIEdgeInsets scrollViewOriginalContentInsets;
         CGPoint origin = CGPointMake(roundf((self.bounds.size.width-viewBounds.size.width)/2), roundf((self.bounds.size.height-viewBounds.size.height)/2));
         [self.activityIndicatorView setFrame:CGRectMake(origin.x, origin.y, viewBounds.size.width, viewBounds.size.height)];
         
-        switch (newState) {
+        switch (state) {
             case SVInfiniteScrollingStateStopped:
                 [self.activityIndicatorView stopAnimating];
                 break;
@@ -302,9 +310,6 @@ UIEdgeInsets scrollViewOriginalContentInsets;
                 break;
         }
     }
-    
-    if(previousState == SVInfiniteScrollingStateTriggered && newState == SVInfiniteScrollingStateLoading && self.infiniteScrollingHandler && self.enabled)
-        self.infiniteScrollingHandler();
 }
 
 @end
