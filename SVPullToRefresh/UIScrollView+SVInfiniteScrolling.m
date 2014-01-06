@@ -130,10 +130,10 @@ UIEdgeInsets scrollViewOriginalContentInsets;
         // default styling values
         self.activityIndicatorViewStyle = UIActivityIndicatorViewStyleGray;
         self.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-        self.state = SVInfiniteScrollingStateStopped;
-        self.enabled = YES;
-        
         self.viewForState = [NSMutableArray arrayWithObjects:@"", @"", @"", @"", nil];
+        self.state = SVInfiniteScrollingStateStopped;
+        [self updateViewForState:SVInfiniteScrollingStateStopped];
+        self.enabled = YES;
     }
     
     return self;
