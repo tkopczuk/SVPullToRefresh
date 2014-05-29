@@ -215,27 +215,37 @@ static char UIScrollViewPullToRefreshView;
     }
 }
 
-- (void)layoutSubviews {
-    
+-(BOOL)hasCustomView {
+    id customView = [self.viewForState objectAtIndex:self.state];
+    return [customView isKindOfClass:[UIView class]];
+}
+
+- (void)updateShownViews {
     for(id otherView in self.viewForState) {
         if([otherView isKindOfClass:[UIView class]])
             [otherView removeFromSuperview];
     }
-    
     id customView = [self.viewForState objectAtIndex:self.state];
-    BOOL hasCustomView = [customView isKindOfClass:[UIView class]];
-    
-    self.titleLabel.hidden = hasCustomView;
-    self.subtitleLabel.hidden = hasCustomView;
-    self.arrow.hidden = hasCustomView;
-    
+    BOOL hasCustomView = [self hasCustomView];
+
     if(hasCustomView) {
         [self addSubview:customView];
         CGRect viewBounds = [customView bounds];
         CGPoint origin = CGPointMake(roundf((self.bounds.size.width-viewBounds.size.width)/2), roundf((self.bounds.size.height-viewBounds.size.height)/2));
         [customView setFrame:CGRectMake(origin.x, origin.y, viewBounds.size.width, viewBounds.size.height)];
+        
+        [self layoutIfNeeded];
     }
-    else {
+    
+    self.titleLabel.hidden    = hasCustomView;
+    self.subtitleLabel.hidden = hasCustomView;
+    self.arrow.hidden         = hasCustomView;
+}
+
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    
+    if (![self hasCustomView]) {
         switch (self.state) {
             case SVPullToRefreshStateAll:
             case SVPullToRefreshStateStopped:
@@ -559,6 +569,7 @@ static char UIScrollViewPullToRefreshView;
     else
         [self.viewForState replaceObjectAtIndex:state withObject:viewPlaceholder];
     
+    [self updateShownViews];
     [self setNeedsLayout];
 }
 
@@ -636,12 +647,13 @@ static char UIScrollViewPullToRefreshView;
 }
 
 - (void)setState:(SVPullToRefreshState)newState {
-    
     if(_state == newState)
         return;
     
     SVPullToRefreshState previousState = _state;
     _state = newState;
+    
+    [self updateShownViews];
     
     [self setNeedsLayout];
     [self layoutIfNeeded];
